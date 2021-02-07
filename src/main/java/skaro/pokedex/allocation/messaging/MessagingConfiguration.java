@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import skaro.pokedex.sdk.GatewayMessagingConfiguration;
+import skaro.pokedex.sdk.messaging.GatewayMessagingConfiguration;
 
 @Configuration
 @Import(GatewayMessagingConfiguration.class)
