@@ -8,15 +8,13 @@ import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+
+import skaro.pokedex.sdk.GatewayMessagingConfiguration;
 
 @Configuration
+@Import(GatewayMessagingConfiguration.class)
 public class MessagingConfiguration {
-	public static final String MESSAGE_CONTAINER_FACTORY_BEAN = "connectionFactoryBean";
-
-	@Bean
-	public Queue newMessageQueue() {
-		return new Queue("foo");
-	}
 
 	@Bean
 	public MessageListenerContainer messageListenerContainer(ConnectionFactory connectionFactory, Queue queue, MessageListenerAdapter adapter) {
@@ -33,7 +31,7 @@ public class MessagingConfiguration {
 	
 	@Bean
 	public MessageListenerAdapter listenerAdapter(MessageReceiver receiver) {
-		return new MessageListenerAdapter(receiver, "receive");
+		return new MessageListenerAdapter(receiver, MessageReceiver.RECIEVE_METHOD_NAME);
 	}
 
 }
