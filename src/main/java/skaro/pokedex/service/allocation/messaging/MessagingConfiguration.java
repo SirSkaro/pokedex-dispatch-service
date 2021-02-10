@@ -1,4 +1,4 @@
-package skaro.pokedex.allocation.messaging;
+package skaro.pokedex.service.allocation.messaging;
 
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.Queue;
