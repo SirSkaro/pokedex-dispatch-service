@@ -1,4 +1,4 @@
-package skaro.pokedex.service.allocation.messaging;
+package skaro.pokedex.service.dispatch.messaging;
 
 import java.lang.invoke.MethodHandles;
 

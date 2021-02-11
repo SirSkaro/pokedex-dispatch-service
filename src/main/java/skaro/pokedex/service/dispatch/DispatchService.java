@@ -1,13 +1,13 @@
-package skaro.pokedex.service.allocation;
+package skaro.pokedex.service.dispatch;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class AllocationService {
+public class DispatchService {
 
 	public static void main(String[] args) {
-		SpringApplication.run(AllocationService.class, args);
+		SpringApplication.run(DispatchService.class, args);
 	}
 
 }

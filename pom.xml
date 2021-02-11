@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>skaro.pokedex.service</groupId>
-	<artifactId>allocation-service</artifactId>
+	<artifactId>dispatch-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>allocation-service</name>
-	<description>Microservice to allocate jobs from the gateway service.</description>
+	<description>Microservice to dispatch jobs from the gateway service.</description>
 	<properties>
 		<java.version>11</java.version>
 	</properties>
