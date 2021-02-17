@@ -1,11 +1,21 @@
 package skaro.pokedex.service.dispatch.messaging;
 
+import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import javax.validation.Valid;
+
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.DirectMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -15,9 +25,13 @@ import skaro.pokedex.sdk.messaging.GatewayMessagingConfiguration;
 @Configuration
 @Import(GatewayMessagingConfiguration.class)
 public class MessagingConfiguration {
-
+	private static final String WORKER_LIST_PROPERTY = "skaro.pokedex";
+	
 	@Bean
-	public MessageListenerContainer messageListenerContainer(ConnectionFactory connectionFactory, Queue queue, MessageListenerAdapter adapter) {
+	public MessageListenerContainer messageListenerContainer(ConnectionFactory connectionFactory, 
+			Queue queue, 
+			MessageListenerAdapter adapter,
+			Executor executor) {
 		DirectMessageListenerContainer listenerContainer = new DirectMessageListenerContainer();
 		listenerContainer.setConnectionFactory(connectionFactory);
 		listenerContainer.setAcknowledgeMode(AcknowledgeMode.NONE);
@@ -25,13 +39,31 @@ public class MessagingConfiguration {
 		listenerContainer.setDefaultRequeueRejected(false);
 		listenerContainer.setShutdownTimeout(100);
 		listenerContainer.setMessageListener(adapter);
+		listenerContainer.setTaskExecutor(executor);
 
 		return listenerContainer;
 	}
 	
 	@Bean
-	public MessageListenerAdapter listenerAdapter(MessageReceiver receiver) {
-		return new MessageListenerAdapter(receiver, MessageReceiver.RECIEVE_METHOD_NAME);
+	public MessageListenerAdapter listenerAdapter(DiscordTextEventMessageReceiver receiver) {
+		return new MessageListenerAdapter(receiver, EventMessageReceiver.RECIEVE_METHOD_NAME);
 	}
 
+	@Bean
+	@ConfigurationProperties(WORKER_LIST_PROPERTY)
+	@Valid
+	public WorkerDispatchConfigurationProperties workerDispatchConfigurationProperties() {
+		return new WorkerDispatchConfigurationProperties();
+	}
+	
+	@Bean
+	@Autowired
+	public MessageQueueRegistrar queueRegistrar(WorkerDispatchConfigurationProperties dispatchProperties, RabbitTemplate template) {
+		Map<String, Queue> workerQueues = dispatchProperties.getWorkers().stream()
+			.map(Queue::new)
+			.collect(Collectors.toMap(Queue::getActualName, Function.identity()));
+		
+		return new WorkerQueueRegistrar(workerQueues, template);
+	}
+	
 }
