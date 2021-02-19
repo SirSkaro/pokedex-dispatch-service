@@ -1,5 +1,7 @@
 package skaro.pokedex.service.dispatch;
 
+import static org.apache.commons.lang3.StringUtils.SPACE;
+
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,14 +18,14 @@ import skaro.pokedex.sdk.messaging.worker.WorkRequest;
 
 @Component
 public class PrefixTextParser implements TextParser {
-	
 	private final static Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+	public final static String PREFIX = "!";
 
 	@Override
 	public Mono<WorkRequest> parse(DiscordTextEventMessage textEvent) {
 		LOG.info("Parsing message {}", textEvent.getContent());
 		
-		if(!textEvent.getContent().startsWith("!")) {
+		if(!textEvent.getContent().startsWith(PREFIX)) {
 			return Mono.empty();
 		}
 		
@@ -44,12 +46,12 @@ public class PrefixTextParser implements TextParser {
 	}
 	
 	private String parseCommand(String fullCommand) {
-		String command = StringUtils.substringBefore(fullCommand, StringUtils.SPACE);
+		String command = StringUtils.substringBefore(fullCommand, SPACE);
 		return StringUtils.lowerCase(command);
 	}
 	
 	private List<String> parseArguments(String fullCommand) {
-		String argumentComponent = StringUtils.substringAfter(fullCommand, StringUtils.SPACE);
+		String argumentComponent = StringUtils.substringAfter(fullCommand, SPACE);
 		if(StringUtils.isBlank(argumentComponent)) {
 			return List.of();
 		}
