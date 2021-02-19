@@ -25,7 +25,7 @@ public class TextCommandDispatcher implements Dispatcher {
 	public Flux<WorkRequest> dispatch() {
 		return receiver.streamMessages()
 				.flatMap(textParser::parse)
-				.flatMap(request -> queueRegistrar.sendRequest(request));
+				.flatMap(queueRegistrar::sendRequest);
 	}
 
 }

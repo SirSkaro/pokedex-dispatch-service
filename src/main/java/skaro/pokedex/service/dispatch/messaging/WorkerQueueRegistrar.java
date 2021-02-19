@@ -38,7 +38,7 @@ public class WorkerQueueRegistrar implements MessageQueueRegistrar {
 	
 	private WorkRequest sendRequest(Queue queue, WorkRequest request) {
 		LOG.info("Sending work request {}, {}", request.getCommmand(), request.getArguments());
-		//template.convertAndSend(queue.getName(), request);
+		template.convertAndSend(queue.getName(), request);
 		return request;
 	}
 	
