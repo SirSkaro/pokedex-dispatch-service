@@ -15,11 +15,13 @@ import org.springframework.amqp.rabbit.listener.DirectMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
+import skaro.pokedex.sdk.messaging.MessageReceiver;
 import skaro.pokedex.sdk.messaging.GatewayMessagingConfiguration;
 
 @Configuration
@@ -29,7 +31,7 @@ public class MessagingConfiguration {
 	
 	@Bean
 	public MessageListenerContainer messageListenerContainer(ConnectionFactory connectionFactory, 
-			Queue queue, 
+			@Qualifier(GatewayMessagingConfiguration.GATEWAY_QUEUE_BEAN) Queue queue, 
 			MessageListenerAdapter adapter,
 			Executor executor) {
 		DirectMessageListenerContainer listenerContainer = new DirectMessageListenerContainer();
@@ -46,7 +48,7 @@ public class MessagingConfiguration {
 	
 	@Bean
 	public MessageListenerAdapter listenerAdapter(DiscordTextEventMessageReceiver receiver) {
-		return new MessageListenerAdapter(receiver, EventMessageReceiver.RECIEVE_METHOD_NAME);
+		return new MessageListenerAdapter(receiver, MessageReceiver.RECIEVE_METHOD_NAME);
 	}
 
 	@Bean

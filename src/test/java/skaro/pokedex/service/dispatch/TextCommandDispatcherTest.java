@@ -3,16 +3,18 @@ package skaro.pokedex.service.dispatch;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
 import reactor.test.StepVerifier;
+import skaro.pokedex.sdk.messaging.MessageReceiver;
 import skaro.pokedex.sdk.messaging.discord.DiscordTextEventMessage;
 import skaro.pokedex.sdk.messaging.worker.WorkRequest;
-import skaro.pokedex.service.dispatch.messaging.EventMessageReceiver;
 import skaro.pokedex.service.dispatch.messaging.MessageQueueRegistrar;
 
 @ExtendWith(SpringExtension.class)
@@ -23,14 +25,16 @@ public class TextCommandDispatcherTest {
 	@Mock
 	private TextParser textParser;
 	@Mock
-	private EventMessageReceiver<DiscordTextEventMessage> receiver;
+	private MessageReceiver<DiscordTextEventMessage> receiver;
+	@Mock
+	private Scheduler scheduler;
 	
 	private TextCommandDispatcher dispatcher;
 	
 	
 	@BeforeEach
 	public void setup() {
-		this.dispatcher = new TextCommandDispatcher(queueRegistrar, textParser, receiver);
+		this.dispatcher = new TextCommandDispatcher(queueRegistrar, textParser, receiver, scheduler);
 	}
 	
 	@Test
@@ -38,7 +42,7 @@ public class TextCommandDispatcherTest {
 		DiscordTextEventMessage message = new DiscordTextEventMessage();
 		WorkRequest request = new WorkRequest();
 		
-		Mockito.when(receiver.streamMessages())
+		Mockito.when(receiver.streamMessages(ArgumentMatchers.any()))
 			.thenReturn(Flux.just(message));
 		Mockito.when(textParser.parse(message))
 			.thenReturn(Mono.just(request));
@@ -56,7 +60,7 @@ public class TextCommandDispatcherTest {
 		DiscordTextEventMessage message = new DiscordTextEventMessage();
 		WorkRequest request = new WorkRequest();
 		
-		Mockito.when(receiver.streamMessages())
+		Mockito.when(receiver.streamMessages(ArgumentMatchers.any()))
 			.thenReturn(Flux.just(message));
 		Mockito.when(textParser.parse(message))
 			.thenReturn(Mono.just(request));
@@ -72,7 +76,7 @@ public class TextCommandDispatcherTest {
 	public void testDispatchNoParserResponse() { 
 		DiscordTextEventMessage message = new DiscordTextEventMessage();
 		
-		Mockito.when(receiver.streamMessages())
+		Mockito.when(receiver.streamMessages(ArgumentMatchers.any()))
 			.thenReturn(Flux.just(message));
 		Mockito.when(textParser.parse(message))
 			.thenReturn(Mono.empty());

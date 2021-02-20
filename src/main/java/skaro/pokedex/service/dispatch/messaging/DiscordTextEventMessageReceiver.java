@@ -9,10 +9,12 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.FluxSink.OverflowStrategy;
+import reactor.core.scheduler.Scheduler;
+import skaro.pokedex.sdk.messaging.MessageReceiver;
 import skaro.pokedex.sdk.messaging.discord.DiscordTextEventMessage;
 
 @Component
-public class DiscordTextEventMessageReceiver implements EventMessageReceiver<DiscordTextEventMessage> {
+public class DiscordTextEventMessageReceiver implements MessageReceiver<DiscordTextEventMessage> {
 	private final static Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 	
 	private Flux<DiscordTextEventMessage> publish;
@@ -27,8 +29,8 @@ public class DiscordTextEventMessageReceiver implements EventMessageReceiver<Dis
 		fluxSink.next(message);
 	}
     
-    public Flux<DiscordTextEventMessage> streamMessages() {
-    	return publish;
+    public Flux<DiscordTextEventMessage> streamMessages(Scheduler scheduler) {
+    	return publish.publishOn(scheduler);
     }
     
 }
