@@ -1,6 +1,9 @@
 package skaro.pokedex.service.dispatch.messaging;
 
-import java.util.Map;
+import static org.mockito.ArgumentMatchers.eq;
+import static skaro.pokedex.sdk.messaging.DispatchTopicMessagingConfiguration.SIMPLE_COMMAND_ROUTING_PATTERN_PREFIX;
+
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,7 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.amqp.core.MessagePostProcessor;
-import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -19,50 +22,35 @@ import skaro.pokedex.sdk.worker.messaging.WorkRequest;
 public class WorkerQueueRegistrarTest {
 
 	@Mock
-	private Map<String, Queue> registeredWorkerQueues;
+	private TopicExchange topic;
 	@Mock
 	private RabbitTemplate template;
 	@Mock
 	private MessagePostProcessor postProcessor;
 	
-	private WorkerQueueRegistrar registrar;
+	private SimpleCommandTopicRouter router;
 	
 	@BeforeEach
 	public void setup() {
-		registrar = new WorkerQueueRegistrar(registeredWorkerQueues, template, postProcessor);
+		router = new SimpleCommandTopicRouter(topic, template, postProcessor);
 	}
 	
 	@Test
-	public void sendRequestWorkerNotRegistered() {
-		String command = "foo";
-		WorkRequest request = new WorkRequest();
-		request.setCommmand(command);
+	public void sendRequest() {
+		String topicName = UUID.randomUUID().toString();
+		Mockito.when(topic.getName()).thenReturn(topicName);
 		
-		Mockito.when(registeredWorkerQueues.get(command))
-			.thenReturn(null);
-		
-		StepVerifier.create(registrar.sendRequest(request))
-			.expectComplete()
-			.verify();
-	}
-	
-	@Test
-	public void sendRequestWorkerRegistered() {
 		String command = "bar";
-		String queueName = "bar worker";
-		Queue queue = Mockito.mock(Queue.class);
 		WorkRequest request = new WorkRequest();
 		request.setCommmand(command);
 		
-		Mockito.when(registeredWorkerQueues.get(command))
-			.thenReturn(queue);
-		Mockito.when(queue.getName())
-			.thenReturn(queueName);
-		
-		StepVerifier.create(registrar.sendRequest(request))
+		StepVerifier.create(router.routeRequest(request))
 			.expectNext(request)
 			.expectComplete()
 			.verify();
+		
+		String expectedKey = SIMPLE_COMMAND_ROUTING_PATTERN_PREFIX + "." + command;
+		Mockito.verify(template).convertAndSend(eq(topicName), eq(expectedKey), eq(request), eq(postProcessor));
 	}
 	
 }

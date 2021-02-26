@@ -15,13 +15,13 @@ import reactor.test.StepVerifier;
 import skaro.pokedex.sdk.messaging.MessageReceiver;
 import skaro.pokedex.sdk.messaging.discord.DiscordTextEventMessage;
 import skaro.pokedex.sdk.worker.messaging.WorkRequest;
-import skaro.pokedex.service.dispatch.messaging.MessageQueueRegistrar;
+import skaro.pokedex.service.dispatch.messaging.WorkRequestRouter;
 
 @ExtendWith(SpringExtension.class)
 public class TextCommandDispatcherTest {
 
 	@Mock
-	private MessageQueueRegistrar queueRegistrar;
+	private WorkRequestRouter queueRegistrar;
 	@Mock
 	private TextParser textParser;
 	@Mock
@@ -46,7 +46,7 @@ public class TextCommandDispatcherTest {
 			.thenReturn(Flux.just(message));
 		Mockito.when(textParser.parse(message))
 			.thenReturn(Mono.just(request));
-		Mockito.when(queueRegistrar.sendRequest(request))
+		Mockito.when(queueRegistrar.routeRequest(request))
 			.thenReturn(Mono.just(request));
 		
 		StepVerifier.create(dispatcher.dispatch())
@@ -64,7 +64,7 @@ public class TextCommandDispatcherTest {
 			.thenReturn(Flux.just(message));
 		Mockito.when(textParser.parse(message))
 			.thenReturn(Mono.just(request));
-		Mockito.when(queueRegistrar.sendRequest(request))
+		Mockito.when(queueRegistrar.routeRequest(request))
 			.thenReturn(Mono.empty());
 		
 		StepVerifier.create(dispatcher.dispatch())

@@ -7,17 +7,17 @@ import reactor.core.scheduler.Scheduler;
 import skaro.pokedex.sdk.messaging.MessageReceiver;
 import skaro.pokedex.sdk.messaging.discord.DiscordTextEventMessage;
 import skaro.pokedex.sdk.worker.messaging.WorkRequest;
-import skaro.pokedex.service.dispatch.messaging.MessageQueueRegistrar;
+import skaro.pokedex.service.dispatch.messaging.WorkRequestRouter;
 
 @Component
 public class TextCommandDispatcher implements Dispatcher {
 
-	private MessageQueueRegistrar queueRegistrar;
+	private WorkRequestRouter queueRegistrar;
 	private TextParser textParser;
 	private MessageReceiver<DiscordTextEventMessage> receiver;
 	private Scheduler scheduler;
 	
-	public TextCommandDispatcher(MessageQueueRegistrar queueRegistrar, TextParser textParser, MessageReceiver<DiscordTextEventMessage> receiver, Scheduler scheduler) {
+	public TextCommandDispatcher(WorkRequestRouter queueRegistrar, TextParser textParser, MessageReceiver<DiscordTextEventMessage> receiver, Scheduler scheduler) {
 		this.queueRegistrar = queueRegistrar;
 		this.textParser = textParser;
 		this.receiver = receiver;
@@ -28,7 +28,7 @@ public class TextCommandDispatcher implements Dispatcher {
 	public Flux<WorkRequest> dispatch() {
 		return receiver.streamMessages(scheduler)
 				.flatMap(textParser::parse)
-				.flatMap(queueRegistrar::sendRequest);
+				.flatMap(queueRegistrar::routeRequest);
 	}
 
 }

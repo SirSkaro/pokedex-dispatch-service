@@ -3,8 +3,8 @@ package skaro.pokedex.service.dispatch.messaging;
 import reactor.core.publisher.Mono;
 import skaro.pokedex.sdk.worker.messaging.WorkRequest;
 
-public interface MessageQueueRegistrar {
+public interface WorkRequestRouter {
 
-	Mono<WorkRequest> sendRequest(WorkRequest request);
+	Mono<WorkRequest> routeRequest(WorkRequest request);
 	
 }
