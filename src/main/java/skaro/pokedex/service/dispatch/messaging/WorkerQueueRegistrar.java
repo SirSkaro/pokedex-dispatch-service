@@ -6,11 +6,12 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import reactor.core.publisher.Mono;
-import skaro.pokedex.sdk.messaging.worker.WorkRequest;
+import skaro.pokedex.sdk.worker.messaging.WorkRequest;
 
 public class WorkerQueueRegistrar implements MessageQueueRegistrar {
 
@@ -18,10 +19,12 @@ public class WorkerQueueRegistrar implements MessageQueueRegistrar {
 	
 	private Map<String, Queue> registeredWorkerQueues;
 	private RabbitTemplate template;
+	private MessagePostProcessor postProcessor;
 	
-	public WorkerQueueRegistrar(Map<String, Queue> registeredWorkerQueues, RabbitTemplate template) {
+	public WorkerQueueRegistrar(Map<String, Queue> registeredWorkerQueues, RabbitTemplate template, MessagePostProcessor postProcessor) {
 		this.registeredWorkerQueues = registeredWorkerQueues;
 		this.template = template;
+		this.postProcessor = postProcessor;
 	}
 
 	@Override
@@ -38,7 +41,7 @@ public class WorkerQueueRegistrar implements MessageQueueRegistrar {
 	
 	private WorkRequest sendRequest(Queue queue, WorkRequest request) {
 		LOG.info("Sending work request {}, {}", request.getCommmand(), request.getArguments());
-		template.convertAndSend(queue.getName(), request);
+		template.convertAndSend(queue.getName(), request, postProcessor);
 		return request;
 	}
 	

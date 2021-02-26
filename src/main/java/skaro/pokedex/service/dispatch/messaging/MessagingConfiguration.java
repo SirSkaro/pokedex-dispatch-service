@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 
 import org.springframework.amqp.core.AcknowledgeMode;
+import org.springframework.amqp.core.MessageDeliveryMode;
+import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -52,6 +54,15 @@ public class MessagingConfiguration {
 	}
 
 	@Bean
+	public MessagePostProcessor messagePostProcessor() {
+		return (message) -> {
+			message.getMessageProperties().setDeliveryMode(MessageDeliveryMode.NON_PERSISTENT);
+			message.getMessageProperties().setExpiration(Long.toString(0));
+			return message;
+		};
+	}
+	
+	@Bean
 	@ConfigurationProperties(WORKER_LIST_PROPERTY)
 	@Valid
 	public WorkerDispatchConfigurationProperties workerDispatchConfigurationProperties() {
@@ -60,12 +71,14 @@ public class MessagingConfiguration {
 	
 	@Bean
 	@Autowired
-	public MessageQueueRegistrar queueRegistrar(WorkerDispatchConfigurationProperties dispatchProperties, RabbitTemplate template) {
+	public MessageQueueRegistrar queueRegistrar(WorkerDispatchConfigurationProperties dispatchProperties, 
+			RabbitTemplate template,
+			MessagePostProcessor postProcessor) {
 		Map<String, Queue> workerQueues = dispatchProperties.getWorkers().stream()
 			.map(Queue::new)
 			.collect(Collectors.toMap(Queue::getActualName, Function.identity()));
 		
-		return new WorkerQueueRegistrar(workerQueues, template);
+		return new WorkerQueueRegistrar(workerQueues, template, postProcessor);
 	}
 	
 }

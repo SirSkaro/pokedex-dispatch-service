@@ -7,12 +7,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import reactor.test.StepVerifier;
-import skaro.pokedex.sdk.messaging.worker.WorkRequest;
+import skaro.pokedex.sdk.worker.messaging.WorkRequest;
 
 @ExtendWith(SpringExtension.class)
 public class WorkerQueueRegistrarTest {
@@ -21,12 +22,14 @@ public class WorkerQueueRegistrarTest {
 	private Map<String, Queue> registeredWorkerQueues;
 	@Mock
 	private RabbitTemplate template;
+	@Mock
+	private MessagePostProcessor postProcessor;
 	
 	private WorkerQueueRegistrar registrar;
 	
 	@BeforeEach
 	public void setup() {
-		registrar = new WorkerQueueRegistrar(registeredWorkerQueues, template);
+		registrar = new WorkerQueueRegistrar(registeredWorkerQueues, template, postProcessor);
 	}
 	
 	@Test

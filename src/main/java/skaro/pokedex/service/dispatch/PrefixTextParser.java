@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 import reactor.core.publisher.Mono;
 import skaro.pokedex.sdk.messaging.discord.DiscordTextEventMessage;
-import skaro.pokedex.sdk.messaging.worker.WorkRequest;
+import skaro.pokedex.sdk.worker.messaging.WorkRequest;
 
 @Component
 public class PrefixTextParser implements TextParser {
