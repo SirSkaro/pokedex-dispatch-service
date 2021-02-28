@@ -13,7 +13,7 @@ import skaro.pokedex.sdk.messaging.DispatchTopicMessagingConfiguration;
 
 @Configuration
 @Import({DispatchTopicMessagingConfiguration.class})
-public class MessagingSenderConfiguration {
+public class MessagingSendConfiguration {
 
 	@Bean
 	public MessagePostProcessor messagePostProcessor() {
