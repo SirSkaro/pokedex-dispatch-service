@@ -12,7 +12,7 @@
 	<groupId>skaro.pokedex.service</groupId>
 	<artifactId>dispatch-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>allocation-service</name>
+	<name>dispatch-service</name>
 	<description>Microservice to dispatch jobs from the gateway service.</description>
 	<properties>
 		<java.version>11</java.version>
