@@ -19,7 +19,7 @@ import reactor.test.StepVerifier;
 import skaro.pokedex.sdk.worker.messaging.WorkRequest;
 
 @ExtendWith(SpringExtension.class)
-public class WorkerQueueRegistrarTest {
+public class SimpleCommandTopicRouterTestTest {
 
 	@Mock
 	private TopicExchange topic;
