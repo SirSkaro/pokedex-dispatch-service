@@ -11,7 +11,7 @@ import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.FluxSink.OverflowStrategy;
 import reactor.core.scheduler.Scheduler;
 import skaro.pokedex.sdk.messaging.MessageReceiver;
-import skaro.pokedex.sdk.messaging.discord.DiscordTextEventMessage;
+import skaro.pokedex.sdk.messaging.gateway.DiscordTextEventMessage;
 
 @Component
 public class DiscordTextEventMessageReceiver implements MessageReceiver<DiscordTextEventMessage> {

@@ -1,7 +1,7 @@
 package skaro.pokedex.service.dispatch.messaging;
 
 import static org.mockito.ArgumentMatchers.eq;
-import static skaro.pokedex.sdk.messaging.DispatchTopicMessagingConfiguration.SIMPLE_COMMAND_ROUTING_PATTERN_PREFIX;
+import static skaro.pokedex.sdk.messaging.dispatch.DispatchTopicMessagingConfiguration.SIMPLE_COMMAND_ROUTING_PATTERN_PREFIX;
 
 import java.util.UUID;
 
@@ -16,10 +16,10 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import reactor.test.StepVerifier;
-import skaro.pokedex.sdk.worker.messaging.WorkRequest;
+import skaro.pokedex.sdk.messaging.dispatch.WorkRequest;
 
 @ExtendWith(SpringExtension.class)
-public class SimpleCommandTopicRouterTestTest {
+public class SimpleCommandTopicRouterTest {
 
 	@Mock
 	private TopicExchange topic;

@@ -11,8 +11,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
-import skaro.pokedex.sdk.messaging.discord.DiscordTextEventMessage;
-import skaro.pokedex.sdk.worker.messaging.WorkRequest;
+import skaro.pokedex.sdk.messaging.dispatch.WorkRequest;
+import skaro.pokedex.sdk.messaging.gateway.DiscordTextEventMessage;
 
 @ExtendWith(SpringExtension.class)
 public class PrefixTextParserTest {

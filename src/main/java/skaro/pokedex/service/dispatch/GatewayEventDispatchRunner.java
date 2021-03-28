@@ -8,7 +8,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import reactor.core.publisher.Mono;
-import skaro.pokedex.sdk.worker.messaging.WorkRequest;
+import skaro.pokedex.sdk.messaging.dispatch.WorkRequest;
 
 @Component
 public class GatewayEventDispatchRunner implements CommandLineRunner {

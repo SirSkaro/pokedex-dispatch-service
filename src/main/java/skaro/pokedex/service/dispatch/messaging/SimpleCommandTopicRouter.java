@@ -1,6 +1,6 @@
 package skaro.pokedex.service.dispatch.messaging;
 
-import static skaro.pokedex.sdk.messaging.DispatchTopicMessagingConfiguration.SIMPLE_COMMAND_ROUTING_PATTERN_PREFIX;
+import static skaro.pokedex.sdk.messaging.dispatch.DispatchTopicMessagingConfiguration.SIMPLE_COMMAND_ROUTING_PATTERN_PREFIX;
 
 import java.lang.invoke.MethodHandles;
 
@@ -11,7 +11,7 @@ import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import reactor.core.publisher.Mono;
-import skaro.pokedex.sdk.worker.messaging.WorkRequest;
+import skaro.pokedex.sdk.messaging.dispatch.WorkRequest;
 
 public class SimpleCommandTopicRouter implements WorkRequestRouter {
 

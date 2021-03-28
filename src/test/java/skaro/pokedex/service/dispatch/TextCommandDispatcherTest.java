@@ -13,8 +13,8 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.test.StepVerifier;
 import skaro.pokedex.sdk.messaging.MessageReceiver;
-import skaro.pokedex.sdk.messaging.discord.DiscordTextEventMessage;
-import skaro.pokedex.sdk.worker.messaging.WorkRequest;
+import skaro.pokedex.sdk.messaging.dispatch.WorkRequest;
+import skaro.pokedex.sdk.messaging.gateway.DiscordTextEventMessage;
 import skaro.pokedex.service.dispatch.messaging.WorkRequestRouter;
 
 @ExtendWith(SpringExtension.class)

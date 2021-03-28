@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import skaro.pokedex.sdk.messaging.DispatchTopicMessagingConfiguration;
+import skaro.pokedex.sdk.messaging.dispatch.DispatchTopicMessagingConfiguration;
 
 @Configuration
 @Import({DispatchTopicMessagingConfiguration.class})

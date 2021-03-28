@@ -13,8 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import reactor.core.publisher.Mono;
-import skaro.pokedex.sdk.messaging.discord.DiscordTextEventMessage;
-import skaro.pokedex.sdk.worker.messaging.WorkRequest;
+import skaro.pokedex.sdk.messaging.dispatch.WorkRequest;
+import skaro.pokedex.sdk.messaging.gateway.DiscordTextEventMessage;
 
 @Component
 public class PrefixTextParser implements TextParser {
