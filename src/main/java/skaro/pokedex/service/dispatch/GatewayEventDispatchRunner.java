@@ -24,11 +24,11 @@ public class GatewayEventDispatchRunner implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		dispatcher.dispatch()
-			.onErrorResume(this::handleError)
+			.onErrorContinue(this::handleError)
 			.subscribe();
 	}
 
-	private Mono<WorkRequest> handleError(Throwable error) {
+	private Mono<WorkRequest> handleError(Throwable error, Object object) {
 		LOG.error("Error in consuming dispatch", error);
 		return Mono.empty();
 	}

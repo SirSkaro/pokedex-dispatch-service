@@ -5,11 +5,14 @@ import java.util.concurrent.Executors;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
+import skaro.pokedex.sdk.cache.InMemoryCacheConfiguration;
 
 @Configuration
+@Import(InMemoryCacheConfiguration.class)
 public class DispatchConfiguration {
 	
 	@Bean

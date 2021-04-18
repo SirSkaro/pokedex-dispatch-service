@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 import skaro.pokedex.sdk.messaging.dispatch.WorkRequest;
 import skaro.pokedex.sdk.messaging.gateway.DiscordTextEventMessage;
+import skaro.pokedex.sdk.resource.Language;
 
 @Component
 public class PrefixTextParser implements TextParser {
@@ -41,6 +42,7 @@ public class PrefixTextParser implements TextParser {
 		request.setAuthorId(textEvent.getAuthorId());
 		request.setChannelId(textEvent.getChannelId());
 		request.setGuildId(textEvent.getGuildId());
+		request.setLanguage(Language.ENGLISH);
 		
 		return request;
 	}
