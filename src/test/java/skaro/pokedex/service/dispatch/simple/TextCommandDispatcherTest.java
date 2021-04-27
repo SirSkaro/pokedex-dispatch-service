@@ -1,4 +1,4 @@
-package skaro.pokedex.service.dispatch;
+package skaro.pokedex.service.dispatch.simple;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,8 +15,8 @@ import reactor.test.StepVerifier;
 import skaro.pokedex.sdk.messaging.MessageReceiver;
 import skaro.pokedex.sdk.messaging.dispatch.WorkRequest;
 import skaro.pokedex.sdk.messaging.gateway.DiscordTextEventMessage;
+import skaro.pokedex.service.dispatch.EventProcessor;
 import skaro.pokedex.service.dispatch.messaging.WorkRequestRouter;
-import skaro.pokedex.service.dispatch.simple.TextCommandDispatcher;
 
 @ExtendWith(SpringExtension.class)
 public class TextCommandDispatcherTest {

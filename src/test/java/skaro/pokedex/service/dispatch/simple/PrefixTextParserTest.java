@@ -1,4 +1,4 @@
-package skaro.pokedex.service.dispatch;
+package skaro.pokedex.service.dispatch.simple;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -12,8 +12,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import skaro.pokedex.sdk.messaging.gateway.DiscordTextEventMessage;
-import skaro.pokedex.service.dispatch.simple.ParsedText;
-import skaro.pokedex.service.dispatch.simple.PrefixTextParser;
 
 @ExtendWith(SpringExtension.class)
 public class PrefixTextParserTest {
@@ -47,13 +45,13 @@ public class PrefixTextParserTest {
 		
 		Mono<ParsedText> result = parser.parse(message, PREFIX);
 		
-		Consumer<ParsedText> assertWorkRequestIsCommandAndHasNoArguments = parsedText -> {
+		Consumer<ParsedText> assertParsedTextIsCommandAndHasNoArguments = parsedText -> {
 			Assertions.assertEquals(command, parsedText.getCommmand());
 			Assertions.assertTrue(parsedText.getArguments().isEmpty());
 		};
 		
 		StepVerifier.create(result)
-			.assertNext(assertWorkRequestIsCommandAndHasNoArguments)
+			.assertNext(assertParsedTextIsCommandAndHasNoArguments)
 			.expectComplete()
 			.verify();
 	}
@@ -73,7 +71,7 @@ public class PrefixTextParserTest {
 		
 		Mono<ParsedText> result = parser.parse(message, PREFIX);
 		
-		Consumer<ParsedText> assertWorkRequestIsCommandAndHasArguments = parsedText -> {
+		Consumer<ParsedText> assertParsedTextIsCommandAndHasArguments = parsedText -> {
 			Assertions.assertEquals(command, parsedText.getCommmand());
 			Assertions.assertEquals(arguments.size(), parsedText.getArguments().size());
 			Assertions.assertEquals(arguments.get(0), parsedText.getArguments().get(0));
@@ -82,7 +80,7 @@ public class PrefixTextParserTest {
 		};
 		
 		StepVerifier.create(result)
-			.assertNext(assertWorkRequestIsCommandAndHasArguments)
+			.assertNext(assertParsedTextIsCommandAndHasArguments)
 			.expectComplete()
 			.verify();
 	}
@@ -101,7 +99,7 @@ public class PrefixTextParserTest {
 		
 		Mono<ParsedText> result = parser.parse(message, PREFIX);
 		
-		Consumer<ParsedText> assertWorkRequestIsCommandAndHasLowercaseArguments = parsedText -> {
+		Consumer<ParsedText> assertParsedTextIsCommandAndHasLowercaseArguments = parsedText -> {
 			Assertions.assertEquals(command, parsedText.getCommmand());
 			Assertions.assertEquals(arguments.size(), parsedText.getArguments().size());
 			Assertions.assertEquals(arguments.get(0).toLowerCase(), parsedText.getArguments().get(0));
@@ -109,7 +107,7 @@ public class PrefixTextParserTest {
 		};
 		
 		StepVerifier.create(result)
-			.assertNext(assertWorkRequestIsCommandAndHasLowercaseArguments)
+			.assertNext(assertParsedTextIsCommandAndHasLowercaseArguments)
 			.expectComplete()
 			.verify();
 	}
@@ -129,7 +127,7 @@ public class PrefixTextParserTest {
 		
 		Mono<ParsedText> result = parser.parse(message, PREFIX);
 		
-		Consumer<ParsedText> assertWorkRequestIsCommandAndHasTrimmedArguments = parsedText -> {
+		Consumer<ParsedText> assertParsedTextIsCommandAndHasTrimmedArguments = parsedText -> {
 			Assertions.assertEquals(command, parsedText.getCommmand());
 			Assertions.assertEquals(arguments.size(), parsedText.getArguments().size());
 			Assertions.assertEquals(arguments.get(0).trim(), parsedText.getArguments().get(0));
@@ -138,7 +136,7 @@ public class PrefixTextParserTest {
 		};
 		
 		StepVerifier.create(result)
-			.assertNext(assertWorkRequestIsCommandAndHasTrimmedArguments)
+			.assertNext(assertParsedTextIsCommandAndHasTrimmedArguments)
 			.expectComplete()
 			.verify();
 	}
