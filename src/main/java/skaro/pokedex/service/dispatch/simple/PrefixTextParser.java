@@ -1,4 +1,4 @@
-package skaro.pokedex.service.dispatch;
+package skaro.pokedex.service.dispatch.simple;
 
 import static org.apache.commons.lang3.StringUtils.SPACE;
 
@@ -13,38 +13,31 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import reactor.core.publisher.Mono;
-import skaro.pokedex.sdk.messaging.dispatch.WorkRequest;
 import skaro.pokedex.sdk.messaging.gateway.DiscordTextEventMessage;
-import skaro.pokedex.sdk.resource.Language;
 
 @Component
 public class PrefixTextParser implements TextParser {
 	private final static Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-	public final static String PREFIX = "!";
 
 	@Override
-	public Mono<WorkRequest> parse(DiscordTextEventMessage textEvent) {
+	public Mono<ParsedText> parse(DiscordTextEventMessage textEvent, String prefix) {
 		LOG.info("Parsing message {}", textEvent.getContent());
 		
-		if(!textEvent.getContent().startsWith(PREFIX)) {
+		if(!textEvent.getContent().startsWith(prefix)) {
 			return Mono.empty();
 		}
 		
 		return Mono.just(toWorkRequest(textEvent));
 	}
 	
-	private WorkRequest toWorkRequest(DiscordTextEventMessage textEvent) {
+	private ParsedText toWorkRequest(DiscordTextEventMessage textEvent) {
 		String commandWithArgumentsNoPrefix = textEvent.getContent().substring(1);
 		
-		WorkRequest request = new WorkRequest();
-		request.setCommmand(parseCommand(commandWithArgumentsNoPrefix));
-		request.setArguments(parseArguments(commandWithArgumentsNoPrefix));
-		request.setAuthorId(textEvent.getAuthorId());
-		request.setChannelId(textEvent.getChannelId());
-		request.setGuildId(textEvent.getGuildId());
-		request.setLanguage(Language.ENGLISH);
+		ParsedText parsedText = new ParsedText();
+		parsedText.setCommmand(parseCommand(commandWithArgumentsNoPrefix));
+		parsedText.setArguments(parseArguments(commandWithArgumentsNoPrefix));
 		
-		return request;
+		return parsedText;
 	}
 	
 	private String parseCommand(String fullCommand) {
@@ -63,7 +56,6 @@ public class PrefixTextParser implements TextParser {
 				.map(StringUtils::trimToEmpty)
 				.map(StringUtils::lowerCase)
 				.collect(Collectors.toList());
-		
 	}
 
 }

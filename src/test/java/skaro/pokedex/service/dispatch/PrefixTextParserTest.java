@@ -11,12 +11,14 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
-import skaro.pokedex.sdk.messaging.dispatch.WorkRequest;
 import skaro.pokedex.sdk.messaging.gateway.DiscordTextEventMessage;
+import skaro.pokedex.service.dispatch.simple.ParsedText;
+import skaro.pokedex.service.dispatch.simple.PrefixTextParser;
 
 @ExtendWith(SpringExtension.class)
 public class PrefixTextParserTest {
-
+	private static final String PREFIX = "!";
+	
 	private PrefixTextParser parser;
 	
 	@BeforeEach
@@ -29,7 +31,7 @@ public class PrefixTextParserTest {
 		DiscordTextEventMessage message = new DiscordTextEventMessage();
 		message.setContent("this message does not have the magic prefix");
 		
-		Mono<WorkRequest> result = parser.parse(message);
+		Mono<ParsedText> result = parser.parse(message, PREFIX);
 		
 		StepVerifier.create(result)
 			.expectNextCount(0)
@@ -41,13 +43,13 @@ public class PrefixTextParserTest {
 	public void testParseCommandWithNoArguments() {
 		String command = "foo";
 		DiscordTextEventMessage message = new DiscordTextEventMessage();
-		message.setContent(PrefixTextParser.PREFIX + command);
+		message.setContent(PREFIX + command);
 		
-		Mono<WorkRequest> result = parser.parse(message);
+		Mono<ParsedText> result = parser.parse(message, PREFIX);
 		
-		Consumer<WorkRequest> assertWorkRequestIsCommandAndHasNoArguments = workRequest -> {
-			Assertions.assertEquals(command, workRequest.getCommmand());
-			Assertions.assertTrue(workRequest.getArguments().isEmpty());
+		Consumer<ParsedText> assertWorkRequestIsCommandAndHasNoArguments = parsedText -> {
+			Assertions.assertEquals(command, parsedText.getCommmand());
+			Assertions.assertTrue(parsedText.getArguments().isEmpty());
 		};
 		
 		StepVerifier.create(result)
@@ -67,16 +69,16 @@ public class PrefixTextParserTest {
 				.toString();
 		
 		DiscordTextEventMessage message = new DiscordTextEventMessage();
-		message.setContent(PrefixTextParser.PREFIX + fullCommand);
+		message.setContent(PREFIX + fullCommand);
 		
-		Mono<WorkRequest> result = parser.parse(message);
+		Mono<ParsedText> result = parser.parse(message, PREFIX);
 		
-		Consumer<WorkRequest> assertWorkRequestIsCommandAndHasArguments = workRequest -> {
-			Assertions.assertEquals(command, workRequest.getCommmand());
-			Assertions.assertEquals(arguments.size(), workRequest.getArguments().size());
-			Assertions.assertEquals(arguments.get(0), workRequest.getArguments().get(0));
-			Assertions.assertEquals(arguments.get(1), workRequest.getArguments().get(1));
-			Assertions.assertEquals(arguments.get(2), workRequest.getArguments().get(2));
+		Consumer<ParsedText> assertWorkRequestIsCommandAndHasArguments = parsedText -> {
+			Assertions.assertEquals(command, parsedText.getCommmand());
+			Assertions.assertEquals(arguments.size(), parsedText.getArguments().size());
+			Assertions.assertEquals(arguments.get(0), parsedText.getArguments().get(0));
+			Assertions.assertEquals(arguments.get(1), parsedText.getArguments().get(1));
+			Assertions.assertEquals(arguments.get(2), parsedText.getArguments().get(2));
 		};
 		
 		StepVerifier.create(result)
@@ -95,15 +97,15 @@ public class PrefixTextParserTest {
 				.toString();
 		
 		DiscordTextEventMessage message = new DiscordTextEventMessage();
-		message.setContent(PrefixTextParser.PREFIX + fullCommand);
+		message.setContent(PREFIX + fullCommand);
 		
-		Mono<WorkRequest> result = parser.parse(message);
+		Mono<ParsedText> result = parser.parse(message, PREFIX);
 		
-		Consumer<WorkRequest> assertWorkRequestIsCommandAndHasLowercaseArguments = workRequest -> {
-			Assertions.assertEquals(command, workRequest.getCommmand());
-			Assertions.assertEquals(arguments.size(), workRequest.getArguments().size());
-			Assertions.assertEquals(arguments.get(0).toLowerCase(), workRequest.getArguments().get(0));
-			Assertions.assertEquals(arguments.get(1).toLowerCase(), workRequest.getArguments().get(1));
+		Consumer<ParsedText> assertWorkRequestIsCommandAndHasLowercaseArguments = parsedText -> {
+			Assertions.assertEquals(command, parsedText.getCommmand());
+			Assertions.assertEquals(arguments.size(), parsedText.getArguments().size());
+			Assertions.assertEquals(arguments.get(0).toLowerCase(), parsedText.getArguments().get(0));
+			Assertions.assertEquals(arguments.get(1).toLowerCase(), parsedText.getArguments().get(1));
 		};
 		
 		StepVerifier.create(result)
@@ -123,16 +125,16 @@ public class PrefixTextParserTest {
 				.toString();
 		
 		DiscordTextEventMessage message = new DiscordTextEventMessage();
-		message.setContent(PrefixTextParser.PREFIX + fullCommand);
+		message.setContent(PREFIX + fullCommand);
 		
-		Mono<WorkRequest> result = parser.parse(message);
+		Mono<ParsedText> result = parser.parse(message, PREFIX);
 		
-		Consumer<WorkRequest> assertWorkRequestIsCommandAndHasTrimmedArguments = workRequest -> {
-			Assertions.assertEquals(command, workRequest.getCommmand());
-			Assertions.assertEquals(arguments.size(), workRequest.getArguments().size());
-			Assertions.assertEquals(arguments.get(0).trim(), workRequest.getArguments().get(0));
-			Assertions.assertEquals(arguments.get(1).trim(), workRequest.getArguments().get(1));
-			Assertions.assertEquals(arguments.get(2).trim(), workRequest.getArguments().get(2));
+		Consumer<ParsedText> assertWorkRequestIsCommandAndHasTrimmedArguments = parsedText -> {
+			Assertions.assertEquals(command, parsedText.getCommmand());
+			Assertions.assertEquals(arguments.size(), parsedText.getArguments().size());
+			Assertions.assertEquals(arguments.get(0).trim(), parsedText.getArguments().get(0));
+			Assertions.assertEquals(arguments.get(1).trim(), parsedText.getArguments().get(1));
+			Assertions.assertEquals(arguments.get(2).trim(), parsedText.getArguments().get(2));
 		};
 		
 		StepVerifier.create(result)

@@ -1,4 +1,4 @@
-package skaro.pokedex.service.dispatch.messaging;
+package skaro.pokedex.service.dispatch.simple;
 
 import static skaro.pokedex.sdk.messaging.dispatch.DispatchTopicMessagingConfiguration.SIMPLE_COMMAND_ROUTING_PATTERN_PREFIX;
 
@@ -12,6 +12,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import reactor.core.publisher.Mono;
 import skaro.pokedex.sdk.messaging.dispatch.WorkRequest;
+import skaro.pokedex.service.dispatch.messaging.WorkRequestRouter;
 
 public class SimpleCommandTopicRouter implements WorkRequestRouter {
 

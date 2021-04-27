@@ -1,29 +1,28 @@
 package skaro.pokedex.service.dispatch;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import reactor.core.scheduler.Scheduler;
-import reactor.core.scheduler.Schedulers;
 import skaro.pokedex.sdk.cache.InMemoryCacheConfiguration;
+import skaro.pokedex.sdk.client.guild.GuildServiceClientConfiguration;
+import skaro.pokedex.sdk.client.guild.GuildSettings;
+import skaro.pokedex.sdk.worker.WorkerResourceConfiguration;
 
 @Configuration
-@Import(InMemoryCacheConfiguration.class)
+@Import({
+	InMemoryCacheConfiguration.class,
+	GuildServiceClientConfiguration.class,
+	WorkerResourceConfiguration.class
+})
 public class DispatchConfiguration {
+	private static final String DEFAULT_GUILD_SETTINGS_PREFIX = "skaro.pokedex.defaults";
 	
 	@Bean
-	public Executor executor() {
-		int availableThreadCount = Runtime.getRuntime().availableProcessors() * 2;
-		return Executors.newFixedThreadPool(availableThreadCount);
-	}
-	
-	@Bean
-	public Scheduler scheduler(Executor executor) {
-		return Schedulers.fromExecutor(executor);
+	@ConfigurationProperties(DEFAULT_GUILD_SETTINGS_PREFIX)
+	public GuildSettings defaultGuildSettings() {
+		return new GuildSettings();
 	}
 	
 }

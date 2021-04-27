@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import skaro.pokedex.sdk.messaging.dispatch.DispatchTopicMessagingConfiguration;
+import skaro.pokedex.service.dispatch.simple.SimpleCommandTopicRouter;
 
 @Configuration
 @Import({DispatchTopicMessagingConfiguration.class})
@@ -26,7 +27,7 @@ public class MessagingSendConfiguration {
 	
 	@Bean
 	@Autowired
-	public WorkRequestRouter queueRegistrar(TopicExchange topic, RabbitTemplate template, MessagePostProcessor postProcessor) {
+	public WorkRequestRouter workRequestRouter(TopicExchange topic, RabbitTemplate template, MessagePostProcessor postProcessor) {
 		return new SimpleCommandTopicRouter(topic, template, postProcessor);
 	}
 	

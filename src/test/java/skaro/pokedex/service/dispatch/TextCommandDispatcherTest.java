@@ -16,6 +16,7 @@ import skaro.pokedex.sdk.messaging.MessageReceiver;
 import skaro.pokedex.sdk.messaging.dispatch.WorkRequest;
 import skaro.pokedex.sdk.messaging.gateway.DiscordTextEventMessage;
 import skaro.pokedex.service.dispatch.messaging.WorkRequestRouter;
+import skaro.pokedex.service.dispatch.simple.TextCommandDispatcher;
 
 @ExtendWith(SpringExtension.class)
 public class TextCommandDispatcherTest {
@@ -23,7 +24,7 @@ public class TextCommandDispatcherTest {
 	@Mock
 	private WorkRequestRouter queueRegistrar;
 	@Mock
-	private TextParser textParser;
+	private EventProcessor<DiscordTextEventMessage> processor;
 	@Mock
 	private MessageReceiver<DiscordTextEventMessage> receiver;
 	@Mock
@@ -34,7 +35,7 @@ public class TextCommandDispatcherTest {
 	
 	@BeforeEach
 	public void setup() {
-		this.dispatcher = new TextCommandDispatcher(queueRegistrar, textParser, receiver, scheduler);
+		this.dispatcher = new TextCommandDispatcher(queueRegistrar, processor, receiver, scheduler);
 	}
 	
 	@Test
@@ -44,7 +45,7 @@ public class TextCommandDispatcherTest {
 		
 		Mockito.when(receiver.streamMessages(ArgumentMatchers.any()))
 			.thenReturn(Flux.just(message));
-		Mockito.when(textParser.parse(message))
+		Mockito.when(processor.process(message))
 			.thenReturn(Mono.just(request));
 		Mockito.when(queueRegistrar.routeRequest(request))
 			.thenReturn(Mono.just(request));
@@ -62,7 +63,7 @@ public class TextCommandDispatcherTest {
 		
 		Mockito.when(receiver.streamMessages(ArgumentMatchers.any()))
 			.thenReturn(Flux.just(message));
-		Mockito.when(textParser.parse(message))
+		Mockito.when(processor.process(message))
 			.thenReturn(Mono.just(request));
 		Mockito.when(queueRegistrar.routeRequest(request))
 			.thenReturn(Mono.empty());
@@ -78,7 +79,7 @@ public class TextCommandDispatcherTest {
 		
 		Mockito.when(receiver.streamMessages(ArgumentMatchers.any()))
 			.thenReturn(Flux.just(message));
-		Mockito.when(textParser.parse(message))
+		Mockito.when(processor.process(message))
 			.thenReturn(Mono.empty());
 		
 		StepVerifier.create(dispatcher.dispatch())

@@ -17,6 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import reactor.test.StepVerifier;
 import skaro.pokedex.sdk.messaging.dispatch.WorkRequest;
+import skaro.pokedex.service.dispatch.simple.SimpleCommandTopicRouter;
 
 @ExtendWith(SpringExtension.class)
 public class SimpleCommandTopicRouterTest {

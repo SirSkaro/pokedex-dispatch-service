@@ -14,11 +14,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import skaro.pokedex.sdk.messaging.MessageReceiver;
-import skaro.pokedex.sdk.messaging.dispatch.DispatchTopicMessagingConfiguration;
 import skaro.pokedex.sdk.messaging.gateway.GatewayMessagingConfiguration;
 
 @Configuration
-@Import({GatewayMessagingConfiguration.class, DispatchTopicMessagingConfiguration.class})
+@Import(GatewayMessagingConfiguration.class)
 public class MessagingListenConfiguration {
 	
 	@Bean
