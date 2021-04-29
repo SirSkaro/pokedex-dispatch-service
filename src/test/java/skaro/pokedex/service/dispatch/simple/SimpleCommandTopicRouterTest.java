@@ -1,4 +1,4 @@
-package skaro.pokedex.service.dispatch.messaging;
+package skaro.pokedex.service.dispatch.simple;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static skaro.pokedex.sdk.messaging.dispatch.DispatchTopicMessagingConfiguration.SIMPLE_COMMAND_ROUTING_PATTERN_PREFIX;
@@ -17,7 +17,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import reactor.test.StepVerifier;
 import skaro.pokedex.sdk.messaging.dispatch.WorkRequest;
-import skaro.pokedex.service.dispatch.simple.SimpleCommandTopicRouter;
 
 @ExtendWith(SpringExtension.class)
 public class SimpleCommandTopicRouterTest {

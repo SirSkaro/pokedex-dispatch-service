@@ -59,7 +59,6 @@ public class TextEventProcessorTest {
 		GuildSettings customSettings = new GuildSettings();
 		customSettings.setPrefix(prefix);
 		
-		
 		Mockito.when(client.getSettings(guildId))
 			.thenReturn(Mono.just(customSettings));
 		Mockito.when(parser.parse(eventMessage, prefix))
@@ -75,7 +74,6 @@ public class TextEventProcessorTest {
 			.assertNext(assertWorkRequestIsAsExepcted)
 			.expectComplete()
 			.verify();
-			
 		
 		Mockito.verify(cacheFacade, Mockito.never()).cache(any(), any(GuildSettings.class));
 	}
@@ -126,7 +124,6 @@ public class TextEventProcessorTest {
 			.thenReturn(Mono.empty());
 		Mockito.when(cacheFacade.cache(guildId, defaultSettings))
 			.then(answer -> answer.getArgument(1));
-		
 		
 		StepVerifier.create(processor.process(eventMessage))
 		.expectComplete()

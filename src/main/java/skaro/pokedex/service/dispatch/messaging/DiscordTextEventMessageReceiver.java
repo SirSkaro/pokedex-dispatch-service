@@ -21,7 +21,7 @@ public class DiscordTextEventMessageReceiver implements MessageReceiver<DiscordT
 	private FluxSink<DiscordTextEventMessage> fluxSink;
 
 	public DiscordTextEventMessageReceiver() {
-		publish = Flux.create(sink -> {this.fluxSink = sink;}, OverflowStrategy.DROP);
+		publish = Flux.create(this::setSink, OverflowStrategy.DROP);
 	}
 	
     public void receive(DiscordTextEventMessage message) {
@@ -31,6 +31,10 @@ public class DiscordTextEventMessageReceiver implements MessageReceiver<DiscordT
     
     public Flux<DiscordTextEventMessage> streamMessages(Scheduler scheduler) {
     	return publish.publishOn(scheduler);
+    }
+    
+    private void setSink(FluxSink<DiscordTextEventMessage> sink) {
+    	this.fluxSink = sink;
     }
     
 }
