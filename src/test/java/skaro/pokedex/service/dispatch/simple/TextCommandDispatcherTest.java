@@ -1,5 +1,7 @@
 package skaro.pokedex.service.dispatch.simple;
 
+import java.io.IOException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +24,7 @@ import skaro.pokedex.service.dispatch.messaging.WorkRequestRouter;
 public class TextCommandDispatcherTest {
 
 	@Mock
-	private WorkRequestRouter queueRegistrar;
+	private WorkRequestRouter router;
 	@Mock
 	private EventProcessor<DiscordTextEventMessage> processor;
 	@Mock
@@ -35,7 +37,7 @@ public class TextCommandDispatcherTest {
 	
 	@BeforeEach
 	public void setup() {
-		this.dispatcher = new TextCommandDispatcher(queueRegistrar, processor, receiver, scheduler);
+		this.dispatcher = new TextCommandDispatcher(router, processor, receiver, scheduler);
 	}
 	
 	@Test
@@ -47,7 +49,7 @@ public class TextCommandDispatcherTest {
 			.thenReturn(Flux.just(message));
 		Mockito.when(processor.process(message))
 			.thenReturn(Mono.just(request));
-		Mockito.when(queueRegistrar.routeRequest(request))
+		Mockito.when(router.routeRequest(request))
 			.thenReturn(Mono.just(request));
 		
 		StepVerifier.create(dispatcher.dispatch())
@@ -65,7 +67,7 @@ public class TextCommandDispatcherTest {
 			.thenReturn(Flux.just(message));
 		Mockito.when(processor.process(message))
 			.thenReturn(Mono.just(request));
-		Mockito.when(queueRegistrar.routeRequest(request))
+		Mockito.when(router.routeRequest(request))
 			.thenReturn(Mono.empty());
 		
 		StepVerifier.create(dispatcher.dispatch())
@@ -74,13 +76,41 @@ public class TextCommandDispatcherTest {
 	}
 	
 	@Test
-	public void testDispatchNoParserResponse() { 
+	public void testDispatchNoProcessorResponse() { 
 		DiscordTextEventMessage message = new DiscordTextEventMessage();
 		
 		Mockito.when(receiver.streamMessages(ArgumentMatchers.any()))
 			.thenReturn(Flux.just(message));
 		Mockito.when(processor.process(message))
 			.thenReturn(Mono.empty());
+		
+		StepVerifier.create(dispatcher.dispatch())
+			.expectComplete()
+			.verify();
+	}
+	
+	@Test
+	public void testDispatchContinueOnMessageProcessError() {
+		DiscordTextEventMessage message = new DiscordTextEventMessage();
+		
+		Mockito.when(receiver.streamMessages(ArgumentMatchers.any()))
+			.thenReturn(Flux.just(message));
+		Mockito.when(processor.process(message))
+			.thenReturn(Mono.error(new NullPointerException()));
+		
+		StepVerifier.create(dispatcher.dispatch())
+			.expectComplete()
+			.verify();
+	}
+	
+	@Test
+	public void testDispatchContinueOnRequestRoutingError() {
+		DiscordTextEventMessage message = new DiscordTextEventMessage();
+		
+		Mockito.when(receiver.streamMessages(ArgumentMatchers.any()))
+			.thenReturn(Flux.just(message));
+		Mockito.when(processor.process(message))
+			.thenReturn(Mono.error(new IOException()));
 		
 		StepVerifier.create(dispatcher.dispatch())
 			.expectComplete()
