@@ -14,7 +14,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.test.StepVerifier;
-import skaro.pokedex.sdk.messaging.MessageReceiver;
+import skaro.pokedex.sdk.messaging.MessageReceiverHotStream;
 import skaro.pokedex.sdk.messaging.dispatch.WorkRequest;
 import skaro.pokedex.sdk.messaging.gateway.DiscordTextEventMessage;
 import skaro.pokedex.service.dispatch.EventProcessor;
@@ -28,7 +28,7 @@ public class TextCommandDispatcherTest {
 	@Mock
 	private EventProcessor<DiscordTextEventMessage> processor;
 	@Mock
-	private MessageReceiver<DiscordTextEventMessage> receiver;
+	private MessageReceiverHotStream<DiscordTextEventMessage> receiver;
 	@Mock
 	private Scheduler scheduler;
 	

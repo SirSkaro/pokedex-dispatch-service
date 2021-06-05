@@ -1,5 +1,7 @@
 package skaro.pokedex.service.dispatch.messaging;
 
+import static skaro.pokedex.sdk.messaging.gateway.GatewayMessagingConfiguration.GATEWAY_QUEUE_BEAN;
+
 import java.util.concurrent.Executor;
 
 import org.springframework.amqp.core.AcknowledgeMode;
@@ -13,17 +15,23 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import skaro.pokedex.sdk.messaging.MessageReceiver;
+import skaro.pokedex.sdk.messaging.MessageReceiverHotStream;
+import skaro.pokedex.sdk.messaging.cache.NearCacheTopicMessageListenerConfiguration;
 import skaro.pokedex.sdk.messaging.gateway.GatewayMessagingConfiguration;
 
 @Configuration
-@Import(GatewayMessagingConfiguration.class)
+@Import({
+	GatewayMessagingConfiguration.class,
+	NearCacheTopicMessageListenerConfiguration.class
+})
 public class MessagingListenConfiguration {
+	private static final String GATEWAY_MESSAGE_LISTENER_CONTAINER_BEAN = "gatewayMessageListenerContainer";
+	private static final String GATEWAY_MESSAGE_LISTENER_ADAPTER_BEAN = "gatewayMessageListenerAdapter";
 	
-	@Bean
+	@Bean(GATEWAY_MESSAGE_LISTENER_CONTAINER_BEAN)
 	public MessageListenerContainer messageListenerContainer(ConnectionFactory connectionFactory, 
-			@Qualifier(GatewayMessagingConfiguration.GATEWAY_QUEUE_BEAN) Queue queue, 
-			MessageListenerAdapter adapter,
+			@Qualifier(GATEWAY_QUEUE_BEAN) Queue queue, 
+			@Qualifier(GATEWAY_MESSAGE_LISTENER_ADAPTER_BEAN) MessageListenerAdapter adapter,
 			Executor executor) {
 		DirectMessageListenerContainer listenerContainer = new DirectMessageListenerContainer();
 		listenerContainer.setConnectionFactory(connectionFactory);
@@ -37,9 +45,9 @@ public class MessagingListenConfiguration {
 		return listenerContainer;
 	}
 	
-	@Bean
+	@Bean(GATEWAY_MESSAGE_LISTENER_ADAPTER_BEAN)
 	public MessageListenerAdapter listenerAdapter(DiscordTextEventMessageReceiver receiver) {
-		return new MessageListenerAdapter(receiver, MessageReceiver.RECIEVE_METHOD_NAME);
+		return new MessageListenerAdapter(receiver, MessageReceiverHotStream.RECEIVE_METHOD_NAME);
 	}
 
 }

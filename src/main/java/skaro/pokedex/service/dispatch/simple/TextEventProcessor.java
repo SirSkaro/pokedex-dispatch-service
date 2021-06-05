@@ -1,5 +1,10 @@
 package skaro.pokedex.service.dispatch.simple;
 
+import java.io.IOException;
+import java.lang.invoke.MethodHandles;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import reactor.core.publisher.Mono;
@@ -12,7 +17,8 @@ import skaro.pokedex.service.dispatch.EventProcessor;
 
 @Service
 public class TextEventProcessor implements EventProcessor<DiscordTextEventMessage> {
-
+	private final static Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+	
 	private TextParser parser;
 	private GuildServiceClient client;
 	private CacheFacade cacheFacade;
@@ -32,7 +38,9 @@ public class TextEventProcessor implements EventProcessor<DiscordTextEventMessag
 	}
 
 	private Mono<GuildSettings> getGuildSettings(String guildId) {
-		return client.getSettings(guildId)
+		return Mono.just(guildId)
+				.flatMap(id -> client.getSettings(id)
+						.onErrorResume(IOException.class, error -> logConnectionError(error)))
 				.switchIfEmpty(Mono.defer(() -> useAndCacheDefaultSettings(guildId)));
 	}
 
@@ -55,6 +63,11 @@ public class TextEventProcessor implements EventProcessor<DiscordTextEventMessag
 		request.setLanguage(settings.getLanguage());
 		
 		return request;
+	}
+	
+	private Mono<GuildSettings> logConnectionError(IOException error) {
+		LOG.error("Unable to connect to guild service. Using default guild settings", error);
+		return Mono.empty();
 	}
 
 }
