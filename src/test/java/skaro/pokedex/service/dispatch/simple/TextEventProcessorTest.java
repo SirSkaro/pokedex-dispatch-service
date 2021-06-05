@@ -58,6 +58,7 @@ public class TextEventProcessorTest {
 		parsedText.setArguments(List.of());
 		GuildSettings customSettings = new GuildSettings();
 		customSettings.setPrefix(prefix);
+		customSettings.setLanguage(Language.ITALIAN);
 		
 		Mockito.when(client.getSettings(guildId))
 			.thenReturn(Mono.just(customSettings));
@@ -68,6 +69,7 @@ public class TextEventProcessorTest {
 			Assertions.assertEquals(parsedText.getCommmand(), request.getCommmand());
 			Assertions.assertEquals(guildId, request.getGuildId());
 			Assertions.assertEquals(parsedText.getArguments(), request.getArguments());
+			Assertions.assertEquals(customSettings.getLanguage(), request.getLanguage());
 		};
 		
 		StepVerifier.create(processor.process(eventMessage))
@@ -99,13 +101,45 @@ public class TextEventProcessorTest {
 		Consumer<WorkRequest> assertWorkRequestIsAsExepcted = request -> {
 			Assertions.assertEquals(parsedText.getCommmand(), request.getCommmand());
 			Assertions.assertEquals(guildId, request.getGuildId());
-			Assertions.assertEquals(parsedText.getArguments(), request.getArguments());
 		};
 		
 		StepVerifier.create(processor.process(eventMessage))
 			.assertNext(assertWorkRequestIsAsExepcted)
 			.expectComplete()
 			.verify();
+		
+		Mockito.verify(cacheFacade, Mockito.never()).cache(any(), any(GuildSettings.class));
+	}
+	
+	@Test
+	public void testProcess_eventIsCommand_clientHasSettings_languageNotSet() {
+		String prefix = "%";
+		String guildId = "guild id";
+		String command = "my-command";
+		DiscordTextEventMessage eventMessage = new DiscordTextEventMessage();
+		eventMessage.setGuildId(guildId);
+		eventMessage.setContent(prefix + command);
+		ParsedText parsedText = new ParsedText();
+		parsedText.setCommmand(command);
+		parsedText.setArguments(List.of());
+		GuildSettings customSettings = new GuildSettings();
+		customSettings.setPrefix(prefix);
+		
+		Mockito.when(client.getSettings(guildId))
+			.thenReturn(Mono.just(customSettings));
+		Mockito.when(parser.parse(eventMessage, prefix))
+			.thenReturn(Mono.just(parsedText));
+		
+		Consumer<WorkRequest> assertWorkRequestIsAsExepcted = request -> {
+			Assertions.assertEquals(parsedText.getCommmand(), request.getCommmand());
+			Assertions.assertEquals(guildId, request.getGuildId());
+			Assertions.assertEquals(defaultSettings.getLanguage(), request.getLanguage());
+		};
+		
+		StepVerifier.create(processor.process(eventMessage))
+		.assertNext(assertWorkRequestIsAsExepcted)
+		.expectComplete()
+		.verify();
 		
 		Mockito.verify(cacheFacade, Mockito.never()).cache(any(), any(GuildSettings.class));
 	}

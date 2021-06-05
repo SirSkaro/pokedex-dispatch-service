@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import reactor.core.publisher.Mono;
 import skaro.pokedex.sdk.client.CacheFacade;
+import skaro.pokedex.sdk.client.Language;
 import skaro.pokedex.sdk.client.guild.GuildServiceClient;
 import skaro.pokedex.sdk.client.guild.GuildSettings;
 import skaro.pokedex.sdk.messaging.dispatch.WorkRequest;
@@ -62,7 +63,7 @@ public class TextEventProcessor implements EventProcessor<DiscordTextEventMessag
 		request.setAuthorId(event.getAuthorId());
 		request.setChannelId(event.getChannelId());
 		request.setGuildId(event.getGuildId());
-		request.setLanguage(settings.getLanguage());
+		request.setLanguage(getCustomOrDefaultLanguage(settings));
 		
 		return request;
 	}
@@ -75,6 +76,11 @@ public class TextEventProcessor implements EventProcessor<DiscordTextEventMessag
 	private String getCustomOrDefaultPrefix(GuildSettings settings) {
 		return Optional.ofNullable(settings.getPrefix())
 				.orElseGet(() -> defaultSettings.getPrefix());
+	}
+	
+	private Language getCustomOrDefaultLanguage(GuildSettings settings) {
+		return Optional.ofNullable(settings.getLanguage())
+				.orElseGet(() -> defaultSettings.getLanguage());
 	}
 
 }
