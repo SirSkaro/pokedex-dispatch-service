@@ -79,6 +79,38 @@ public class TextEventProcessorTest {
 	}
 	
 	@Test
+	public void testProcess_eventIsCommand_clientHasSettings_prefixNotSet() {
+		String guildId = "guild id";
+		String command = "my-command";
+		DiscordTextEventMessage eventMessage = new DiscordTextEventMessage();
+		eventMessage.setGuildId(guildId);
+		eventMessage.setContent(defaultSettings.getPrefix() + command);
+		ParsedText parsedText = new ParsedText();
+		parsedText.setCommmand(command);
+		parsedText.setArguments(List.of());
+		GuildSettings customSettings = new GuildSettings();
+		customSettings.setLanguage(Language.SPANISH);
+		
+		Mockito.when(client.getSettings(guildId))
+			.thenReturn(Mono.just(customSettings));
+		Mockito.when(parser.parse(eventMessage, defaultSettings.getPrefix()))
+			.thenReturn(Mono.just(parsedText));
+		
+		Consumer<WorkRequest> assertWorkRequestIsAsExepcted = request -> {
+			Assertions.assertEquals(parsedText.getCommmand(), request.getCommmand());
+			Assertions.assertEquals(guildId, request.getGuildId());
+			Assertions.assertEquals(parsedText.getArguments(), request.getArguments());
+		};
+		
+		StepVerifier.create(processor.process(eventMessage))
+			.assertNext(assertWorkRequestIsAsExepcted)
+			.expectComplete()
+			.verify();
+		
+		Mockito.verify(cacheFacade, Mockito.never()).cache(any(), any(GuildSettings.class));
+	}
+	
+	@Test
 	public void testProcess_eventIsCommand_clientDoesNotHaveSettings() {
 		String guildId = "guild id";
 		String command = "my-command";
