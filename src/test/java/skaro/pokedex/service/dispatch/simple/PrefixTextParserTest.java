@@ -57,6 +57,26 @@ public class PrefixTextParserTest {
 	}
 	
 	@Test
+	public void testParseCommandWithNoArguments_longPrefix() {
+		String command = "foo";
+		String prefix = "my-long-long-prefix$$";
+		DiscordTextEventMessage message = new DiscordTextEventMessage();
+		message.setContent(prefix + command);
+		
+		Mono<ParsedText> result = parser.parse(message, prefix);
+		
+		Consumer<ParsedText> assertParsedTextIsCommandAndHasNoArguments = parsedText -> {
+			Assertions.assertEquals(command, parsedText.getCommmand());
+			Assertions.assertTrue(parsedText.getArguments().isEmpty());
+		};
+		
+		StepVerifier.create(result)
+			.assertNext(assertParsedTextIsCommandAndHasNoArguments)
+			.expectComplete()
+			.verify();
+	}
+	
+	@Test
 	public void testParseCommandWithArguments() {
 		String command = "bar";
 		List<String> arguments = List.of("foo", "bar", "foobar");

@@ -27,11 +27,12 @@ public class PrefixTextParser implements TextParser {
 			return Mono.empty();
 		}
 		
-		return Mono.just(toWorkRequest(textEvent));
+		return Mono.just(toWorkRequest(textEvent, prefix));
 	}
 	
-	private ParsedText toWorkRequest(DiscordTextEventMessage textEvent) {
-		String commandWithArgumentsNoPrefix = textEvent.getContent().substring(1);
+	private ParsedText toWorkRequest(DiscordTextEventMessage textEvent, String prefix) {
+		int prefixLength = prefix.length();
+		String commandWithArgumentsNoPrefix = textEvent.getContent().substring(prefixLength);
 		
 		ParsedText parsedText = new ParsedText();
 		parsedText.setCommmand(parseCommand(commandWithArgumentsNoPrefix));
