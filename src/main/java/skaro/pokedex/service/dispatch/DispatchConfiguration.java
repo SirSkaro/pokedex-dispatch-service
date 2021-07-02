@@ -5,14 +5,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import skaro.pokedex.sdk.cache.InMemoryCacheConfiguration;
+import skaro.pokedex.sdk.cache.NearCacheConfiguration;
 import skaro.pokedex.sdk.client.guild.GuildServiceClientConfiguration;
 import skaro.pokedex.sdk.client.guild.GuildSettings;
 import skaro.pokedex.sdk.worker.WorkerResourceConfiguration;
 
 @Configuration
 @Import({
-	InMemoryCacheConfiguration.class,
+	NearCacheConfiguration.class,
 	GuildServiceClientConfiguration.class,
 	WorkerResourceConfiguration.class
 })
